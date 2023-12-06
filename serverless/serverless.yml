@@ -42,7 +42,7 @@ functions:
     handler: account.create.handler
     events:
       - httpApi:
-          path: /customerCreate
+          path: /account/create
           method: post
   api:
     handler: index.handler
