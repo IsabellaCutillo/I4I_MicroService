@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "aws-sdk": "^2.1512.0",
     "serverless": "^3.38.0"
   }
 }
