@@ -1,11 +1,49 @@
 service: serverless
 frameworkVersion: '3'
 
+# Details about the cloud provider
 provider:
   name: aws
   runtime: nodejs18.x
+  environment:
+    DYNAMODB_CUSTOMER_TABLE: ${self:service}-customerTable-${sls:stage}
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'dynamodb:PutItem'
+            - 'dynamodb:Get*'
+            - 'dynamodb:Scan*'
+            - 'dynamodb:UpdateItem'
+            - 'dynamodb:DeleteItem'
+          Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-customerTable-${sls:stage}
 
+
+
+# Defines the AWS resources that should be created or managed
+resources:
+  Resources:
+    AccountTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+        BillingMode: PAY_PER_REQUEST
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        TableName: ${self:service}-accountTable-${sls:stage}
+
+# Defines the AWS Lambda functions in the service
 functions:
+  customerCreate:
+    handler: account.create.handler
+    events:
+      - httpApi:
+          path: /customerCreate
+          method: post
   api:
     handler: index.handler
     events:
